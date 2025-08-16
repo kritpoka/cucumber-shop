@@ -10,6 +10,7 @@ public class BuyStepdefs {
 
     private ProductCatalog catalog;
     private Order order;
+    private Exception exception;
 
     @Given("the store is ready to service customers")
     public void the_store_is_ready_to_service_customers() {
@@ -25,12 +26,21 @@ public class BuyStepdefs {
     @When("I buy {string} with quantity {int}")
     public void i_buy_with_quantity(String name, int quantity) {
         Product prod = catalog.getProduct(name);
-        order.addItem(prod, quantity);
+        try {
+            order.addItem(prod, quantity);
+        } catch(Exception e) {
+            exception = e;
+        }
     }
 
     @Then("total should be {float}")
     public void total_should_be(double total) {
         assertEquals(total, order.getTotal());
+    }
+
+    @Then("error with message {string}")
+    public void error_with_message(String message){
+        assertEquals(message, exception.getMessage());
     }
 }
 
